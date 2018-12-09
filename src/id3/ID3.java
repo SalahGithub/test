@@ -1,0 +1,328 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package id3;
+
+import java.awt.BorderLayout;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+
+/**
+ *
+ * @author Salah
+ */
+public class ID3 extends javax.swing.JFrame {
+
+    /**
+     * Creates new form ID3
+     */
+    private static ID3 instance = null;
+    private static final long serialVersionUID = 1L;	//eclipse me met un warning si je le met pas
+	private String nomAttributs[] = null;	// contient les noms des attributs
+	private int nbExemples = 0;				// nombre d'exemples
+	private int nbAttributs = 0;			// nombre d'attributs
+	private Vector valeurAttributs[];		// tableau contenant les valeurs des attributs (string)
+	private Vector Exemples = null;			// contient les exemples sous forme de chiffres
+	private Noeud root = null;				// noeud racine
+        private String chemin;
+        private JTree arbre = null;
+        private JPanel jpanel2=new JPanel();
+        JScrollPane sp = new JScrollPane(arbre);
+        private ID3() {
+		initComponents();
+                
+	}
+        
+        
+	public static ID3 getInstance()
+	{
+		if(instance==null) {
+                instance = new ID3();
+            }
+		return instance;
+	}
+   
+        public void goFor(String fichier) throws Exception
+	{
+		if(fichier.equals("")||fichier==null) {
+                return;
+            }
+		readData(fichier);
+                System.out.println("read date");
+		createArbre();
+		afficherArbre();
+	}
+        
+        private JPanel getJPanel()
+	{
+		if (jpanel2 == null)
+		{
+			jpanel2 = new JPanel();
+			jpanel2.setLayout(new BorderLayout());
+		
+		}
+		return jpanel2;
+	}
+        
+        public void readData(String nomFichier) throws Exception
+	{
+		Exemples = new Vector();
+		nbExemples = 0;
+		/*
+		 * ouverture du fichier contenant les exemples
+		 */
+		FileInputStream in = null;
+  		try
+		{
+			File inputFile = new File(nomFichier);
+			in = new FileInputStream(inputFile);
+		}
+		catch (Exception e)	{return;}
+
+  		BufferedReader bin = new BufferedReader(new InputStreamReader(in) );
+
+		String input;
+  		input = bin.readLine();				// premire ligne du fichier contient les noms des differents attributs
+  		StringTokenizer tokenizer = new StringTokenizer(input);	//deviser la ligne en des mots
+		nbAttributs = tokenizer.countTokens();	 //compter le nombre d'attributs				
+		nomAttributs = new String[nbAttributs];   //liste qui contien les noms d'attributs, sa taille est celui de nombre d'attribut
+		for(int i=0;i<nbAttributs;i++)
+		{
+			nomAttributs[i]=tokenizer.nextToken();	//la liste nomAttributs contient le nom de tous les attributs + le comcept cible
+		}
+		
+		valeurAttributs = new Vector[nbAttributs];
+		for (int i = 0; i< nbAttributs; i++) // pour chaque attribut, creer un vecteur qui contient les valeurs de ces attributs
+		{
+			valeurAttributs[i]= new Vector();
+		}
+		
+		/*
+		 *  recup�ration des donn�es
+		 */
+		int [] exemple;
+		while(true)
+		{
+			exemple = new int[nbAttributs];
+			String value;
+			input = bin.readLine();		//nouvel exemple
+			if(input == null) break;	// si input = null fin des exemples
+			nbExemples++;
+			tokenizer = new StringTokenizer(input);
+                        System.out.println(input);
+			int nbToken = tokenizer.countTokens();
+			for (int attribut = 0; attribut<nbToken;attribut++)
+			{
+				value = tokenizer.nextToken();
+				exemple[attribut] = valeurAttribut(attribut,value);
+			}
+			Exemples.add(exemple);
+                       
+		}
+		bin.close();
+	}
+        
+        public void createArbre()
+	{		
+		root = new Noeud(valeurAttributs,Exemples,nbAttributs,nomAttributs);
+		root.generationArbre();
+	}
+        
+        public void afficherArbre()
+	{
+		if(arbre!=null) {
+                jPanel1.remove(arbre);
+            }
+		DefaultMutableTreeNode racine = root.generationAffichage();
+		arbre = new JTree(racine);
+//              jPanel1.add(new JTextField());
+		getContentPane().add(BorderLayout.CENTER,sp);
+                jPanel1.add(BorderLayout.CENTER, jpanel2);	
+                
+		this.setVisible(true);
+
+	}
+        
+        public int valeurAttribut(int attribut,String value) // numéro d'attribut + le nom
+	{
+		int valeur = valeurAttributs[attribut].indexOf(value);
+		if (valeur < 0) //valeur n'existe pas
+		{
+			valeurAttributs[attribut].addElement(value);//ajouter la valeur au vecteur
+			valeur =  valeurAttributs[attribut].size() -1; //après l'ajout de valeur, la valeur s'est la derniere
+		}
+		return valeur;
+	}
+        
+        
+        
+        
+        
+        
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        fc = new javax.swing.JDialog();
+        f = new javax.swing.JFileChooser();
+        jButton1 = new javax.swing.JButton();
+        jTextField1 = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+
+        fc.setMinimumSize(new java.awt.Dimension(645, 419));
+
+        f.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout fcLayout = new javax.swing.GroupLayout(fc.getContentPane());
+        fc.getContentPane().setLayout(fcLayout);
+        fcLayout.setHorizontalGroup(
+            fcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(f, javax.swing.GroupLayout.DEFAULT_SIZE, 645, Short.MAX_VALUE)
+        );
+        fcLayout.setVerticalGroup(
+            fcLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(fcLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(f, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jButton1.setText("parcourir");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.setText("C:\\Users\\Salah\\Desktop\\id3\\exemple_play_tennis");
+
+        jPanel1.setBackground(new java.awt.Color(153, 153, 255));
+        jPanel1.setLayout(new java.awt.BorderLayout());
+
+        jButton2.setText("go");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(199, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(12, 12, 12))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 341, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(85, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void fActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fActionPerformed
+            chemin = f.getSelectedFile().toString();//recupere le chemin de fichier sélectionné (f=file chooser)
+            jTextField1.setText(chemin);
+            fc.hide();//hide the file chooser (or the dialog)
+    }//GEN-LAST:event_fActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+      fc.show();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+                                try
+				{
+					this.goFor(jTextField1.getText());
+				}
+				catch (Exception e1)
+				{
+					e1.printStackTrace();
+				}
+        
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(ID3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(ID3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(ID3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(ID3.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ID3().setVisible(true);
+            }
+        });
+    }
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFileChooser f;
+    private javax.swing.JDialog fc;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField jTextField1;
+    // End of variables declaration//GEN-END:variables
+}
